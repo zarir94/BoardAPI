@@ -1,0 +1,8 @@
+node_modules/
+output/
+.gemini/
+ai-keys.json
+*.tmp
+*.tmp.*
+solved-captcha.json
+ai-solved-batch.json
