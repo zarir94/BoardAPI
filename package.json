@@ -10,7 +10,9 @@
   "keywords": [],
   "dependencies": {
     "@heyputer/puter.js": "^2.6.4",
+    "@hono/node-server": "^2.1.5",
     "fetch-cookie": "^3.2.0",
+    "hono": "^4.13.13",
     "lowdb": "^7.0.1",
     "p-map": "^7.1.1",
     "ts-node": "^10.9.2",

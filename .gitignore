@@ -5,4 +5,4 @@ ai-keys.json
 *.tmp
 *.tmp.*
 solved-captcha.json
-ai-solved-batch.json
+ai-solved-batch*.json

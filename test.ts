@@ -1,5 +1,5 @@
 import solves from "./verified-captcha.json" with { type: "json" };
-import { getResult } from './utils/result.js';
+import { getResult } from './utils/query.js';
 import makeFetchCookie from "fetch-cookie";
 import { populateSession } from './utils/req.js';
 
