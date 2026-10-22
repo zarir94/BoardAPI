@@ -61,6 +61,22 @@ app.get('/api/get-institutions', async (c) => {
 app.use('/', serveStatic({ path: './static/index.html' }));
 app.use('/*', serveStatic({ root: './static' }));
 
+app.onError((err, c) => {
+    const status = 'status' in err && typeof err.status === 'number' ? err.status : 500
+
+    return c.json({
+        success: false,
+        msg: 'Something went wrong. Check error.message',
+        error: {
+            name: err.name || 'Error',
+            message: err.message || 'An unexpected error occurred',
+            status: status,
+            stack: err.stack ? err.stack.split('\n').map(line => line.trim()) : [],
+            cause: err.cause || null
+        }
+    }, status as any)
+})
+
 const port = 3000;
 console.log(`Server running at http://localhost:${port}`);
 

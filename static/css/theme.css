@@ -1,0 +1,58 @@
+/**
+ * BoardAPI - Theme Variables & Core Typography
+ * Clean, modern developer console aesthetic with zero AI slop gradients.
+ */
+
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Monaco, Consolas, "Fira Code", monospace;
+
+  /* Method accents */
+  --method-get: #10b981;
+  --method-get-bg: rgba(16, 185, 129, 0.12);
+  --method-get-border: rgba(16, 185, 129, 0.28);
+
+  --method-post: #f59e0b;
+  --method-post-bg: rgba(245, 158, 11, 0.12);
+  --method-post-border: rgba(245, 158, 11, 0.28);
+
+  --accent-primary: #2563eb;
+  --accent-primary-hover: #1d4ed8;
+}
+
+[data-bs-theme="dark"] {
+  --site-bg: #0b0f17;
+  --card-bg: #111827;
+  --card-surface: #172033;
+  --card-surface-subtle: #1e293b;
+  --border-color: #273549;
+  --border-muted: #1e293b;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --terminal-bg: #090d14;
+}
+
+[data-bs-theme="light"] {
+  --site-bg: #f8fafc;
+  --card-bg: #ffffff;
+  --card-surface: #f1f5f9;
+  --card-surface-subtle: #e2e8f0;
+  --border-color: #cbd5e1;
+  --border-muted: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --terminal-bg: #1e293b;
+}
+
+body {
+  background-color: var(--site-bg);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+}

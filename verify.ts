@@ -8,7 +8,7 @@ import makeFetchCookie from "fetch-cookie";
 import { populateSession } from './utils/req.js';
 
 const rl = readline.createInterface({ input, output });
-const solvedDB = await JSONFilePreset('ai-solved-batch-2 copy.json', {} as Record<string, number | null>);
+const solvedDB = await JSONFilePreset('solved-captcha.json', {} as Record<string, number | null>);
 const verifiedDB = await JSONFilePreset('verified-captcha.json', {} as Record<string, number | null>);
 const ASK_INVALID = !true; // a little cfg
 const INVALIDS: string[] = [];

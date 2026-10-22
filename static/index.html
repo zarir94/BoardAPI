@@ -1,1 +1,731 @@
-hello world!!!
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BoardAPI — Documentation &amp; Playground</title>
+
+  <!-- Prevent Theme Flicker -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('boardapi-theme') || 'dark';
+      document.documentElement.setAttribute('data-bs-theme', savedTheme);
+      window.addEventListener('DOMContentLoaded', () => {
+        const pd = document.getElementById('prism-dark');
+        const pl = document.getElementById('prism-light');
+        if (pd && pl) {
+          pd.disabled = savedTheme !== 'dark';
+          pl.disabled = savedTheme === 'dark';
+        }
+      });
+    })();
+  </script>
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  
+  <!-- Prism Syntax Highlighting (Dark & Light) -->
+  <link id="prism-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <link id="prism-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled />
+
+  <!-- Custom Modular CSS -->
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body x-data>
+
+  <!-- Sticky Navbar -->
+  <nav class="navbar navbar-expand navbar-custom sticky-top">
+    <div class="container-lg">
+      <a class="brand-title" href="#">
+        <i class="bi bi-mortarboard-fill text-primary"></i>
+        <span>BoardAPI</span>
+        <span class="brand-pill">v1.0</span>
+      </a>
+
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <div class="d-none d-sm-flex gap-2">
+          <a href="#get-result" class="btn btn-sm btn-outline-secondary border-0 text-muted">/get-result</a>
+          <a href="#get-institutions" class="btn btn-sm btn-outline-secondary border-0 text-muted">/get-institutions</a>
+        </div>
+
+        <!-- Dark/Light Theme Toggle -->
+        <button 
+          type="button" 
+          class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
+          @click="$store.theme.toggle()"
+          :title="'Switch to ' + ($store.theme.current === 'dark' ? 'light' : 'dark') + ' theme'"
+        >
+          <i class="bi" :class="$store.theme.current === 'dark' ? 'bi-moon-stars-fill' : 'bi-sun-fill'"></i>
+          <span class="d-none d-md-inline" x-text="$store.theme.current === 'dark' ? 'Dark' : 'Light'"></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <main class="container-lg py-5">
+
+    <!-- Hero Header -->
+    <header class="text-center mb-5 pb-2">
+      <h1 class="fw-bold tracking-tight mb-2">Education Board API</h1>
+      <p class="text-muted lead fs-6 mb-3">
+        Unified REST interface for Bangladesh education board exam results and institution data.
+      </p>
+      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-3 border bg-body-tertiary font-monospace small">
+        <span class="text-muted">Base URL:</span>
+        <code class="text-primary fw-semibold" x-text="$store.apiData.origin">http://localhost:3000</code>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         API 1: /api/get-result
+         ========================================== -->
+    <section class="api-card" id="get-result" x-data="getResultEndpoint">
+      
+      <!-- Card Header -->
+      <div class="api-card-header">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span class="badge-method badge-method-dual">GET / POST</span>
+          <span class="endpoint-uri">/api/get-result</span>
+        </div>
+        <span class="text-muted small">Fetch student individual exam result and grades</span>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <ul class="nav nav-pills nav-pills-custom">
+        <li class="nav-item">
+          <button class="nav-link" :class="{ 'active': activeTab === 'params' }" @click="activeTab = 'params'">
+            <i class="bi bi-list-columns me-1"></i> Parameters
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" :class="{ 'active': activeTab === 'example' }" @click="activeTab = 'example'">
+            <i class="bi bi-code-slash me-1"></i> Example
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" :class="{ 'active': activeTab === 'playground' }" @click="activeTab = 'playground'; highlightPreview()">
+            <i class="bi bi-play-circle-fill me-1"></i> Playground
+          </button>
+        </li>
+      </ul>
+
+      <!-- Tab 1: Parameters -->
+      <div class="p-4" x-show="activeTab === 'params'">
+        <h6 class="text-uppercase text-muted fw-bold small mb-3 tracking-wide">Request Parameters</h6>
+        <div class="table-responsive rounded-2 border mb-4">
+          <table class="table table-custom align-middle">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Requirement</th>
+                <th style="min-width: 20rem;">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="param-name">exam</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><span class="badge-tag-req">Required</span></td>
+                <td>
+                  <div>Examination program</div>
+                  <div class="mt-1">
+                    <span class="val-badge">jsc</span>
+                    <span class="val-badge">ssc</span>
+                    <span class="val-badge">hsc</span>
+                    <span class="val-badge">dibs</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="param-name">board</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><span class="badge-tag-req">Required</span></td>
+                <td>
+                  <div>Education Board code</div>
+                  <div class="mt-1">
+                    <span class="val-badge">barisal</span>
+                    <span class="val-badge">chittagong</span>
+                    <span class="val-badge">comilla</span>
+                    <span class="val-badge">dhaka</span>
+                    <span class="val-badge">dinajpur</span>
+                    <span class="val-badge">jessore</span>
+                    <span class="val-badge">madrasah</span>
+                    <span class="val-badge">mymensingh</span>
+                    <span class="val-badge">rajshahi</span>
+                    <span class="val-badge">sylhet</span>
+                    <span class="val-badge">tec</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="param-name">year</span></td>
+                <td><span class="param-type">number</span></td>
+                <td><span class="badge-tag-req">Required</span></td>
+                <td>Four-digit passing year (e.g. <code>2025</code>). Range: 1996 – present.</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">roll</span></td>
+                <td><span class="param-type">number</span></td>
+                <td><span class="badge-tag-req">Required</span></td>
+                <td>Candidate 6-digit exam roll number.</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">reg</span></td>
+                <td><span class="param-type">number</span></td>
+                <td><span class="badge-tag-req">Required</span></td>
+                <td>Candidate 10-digit registration number.</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">maxCaptchaRetry</span></td>
+                <td><span class="param-type">number</span></td>
+                <td><span class="badge-tag-opt">Optional</span></td>
+                <td>Maximum auto-solve retry attempts for verified captcha. Clamped between <code>10</code> and <code>500</code> (Default: <code>50</code>).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-3 rounded-2 border bg-body-tertiary small text-muted">
+          <i class="bi bi-info-circle text-primary me-1"></i>
+          <strong>Supported Content-Types:</strong> For <code>GET</code> requests, provide parameters in the URL query string. For <code>POST</code> requests, <code>application/json</code>, <code>application/x-www-form-urlencoded</code>, and <code>multipart/form-data</code> bodies are all supported.
+        </div>
+      </div>
+
+      <!-- Tab 2: Example -->
+      <div class="p-4" x-show="activeTab === 'example'">
+        
+        <!-- GET Curl -->
+        <div class="terminal-block">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+            </div>
+            <span class="terminal-title">cURL (GET)</span>
+            <button type="button" class="copy-btn" onclick="copyCode(this, 'example-gr-get')">
+              <i class="bi bi-clipboard"></i> <span>Copy</span>
+            </button>
+          </div>
+          <pre class="terminal-pre"><code class="language-bash" id="example-gr-get">curl "http://localhost:3000/api/get-result?exam=ssc&amp;board=jessore&amp;year=2025&amp;roll=617381&amp;reg=2213489227"</code></pre>
+        </div>
+
+        <!-- POST Curl -->
+        <div class="terminal-block">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+            </div>
+            <span class="terminal-title">cURL (POST)</span>
+            <button type="button" class="copy-btn" onclick="copyCode(this, 'example-gr-post')">
+              <i class="bi bi-clipboard"></i> <span>Copy</span>
+            </button>
+          </div>
+          <pre class="terminal-pre"><code class="language-bash" id="example-gr-post">curl -X POST "http://localhost:3000/api/get-result" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "exam": "ssc",
+    "board": "jessore",
+    "year": 2025,
+    "roll": 617381,
+    "reg": 2213489227
+  }'</code></pre>
+        </div>
+
+        <div class="terminal-block">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+            </div>
+            <span class="terminal-title">Response</span>
+            <button type="button" class="copy-btn" onclick="copyCode(this, 'example-gr-res')">
+              <i class="bi bi-clipboard"></i> <span>Copy</span>
+            </button>
+          </div>
+          <pre class="terminal-pre"><code class="language-json" id="example-gr-res">{
+  "success": true,
+  "data": {
+    "meta": {
+      "exam": "ssc",
+      "year": 2025,
+      "notice": null,
+      "subjectFile": "ssc_sub_dhaka_2025.json",
+      "config": {
+        "showMarks": false,
+        "totalOnly": false,
+        "hideFailed": true
+      }
+    },
+    "student": {
+      "rollNo": "617381",
+      "registrationNo": "2213489227",
+      "name": "TANZIM KHAN ZIM",
+      "fatherName": "MD. SHAMSUL ALAM KHAN",
+      "motherName": "MST. TASLIMA KHATUN",
+      "board": "JASHORE",
+      "session": "2023-24",
+      "groupLabel": "Group",
+      "group": "SCIENCE",
+      "type": "REGULAR",
+      "gender": "Male",
+      "dob": "04-10-2009",
+      "institute": "Govt. Laboratory High School",
+      "eiin": null,
+      "thana": "KHAN JAHAN ALI",
+      "zilla": "KHULNA"
+    },
+    "result": {
+      "raw": "GPA=3.39",
+      "display": "GPA=3.39",
+      "gpa": 3.39,
+      "isPassed": true
+    },
+    "assessments": {
+      "main": {
+        "title": "Subject-wise Grade/Marks",
+        "valueColumnTitle": "Grade",
+        "subjects": [
+          { "rawCode": "101", "name": "BANGLA", "grade": "A" },
+          { "rawCode": "107", "name": "ENGLISH", "grade": "B" },
+          { "rawCode": "109", "name": "MATHEMATICS", "grade": "C" }
+        ]
+      }
+    }
+  },
+  "original_response": {
+    "status": 0,
+    "msg": "Success",
+    "res": {
+      "name": "TANZIM KHAN ZIM",
+      "roll_no": "617381",
+      "regno": "2213489227",
+      "board_name": "JASHORE",
+      "res_detail": "GPA=3.39"
+    }
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Tab 3: Playground -->
+      <div class="playground-panel" x-show="activeTab === 'playground'">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+          
+          <!-- Method Toggle -->
+          <div class="btn-group btn-group-sm" role="group">
+            <button 
+              type="button" 
+              class="btn" 
+              :class="method === 'GET' ? 'btn-primary' : 'btn-outline-secondary'"
+              @click="method = 'GET'"
+            >GET</button>
+            <button 
+              type="button" 
+              class="btn" 
+              :class="method === 'POST' ? 'btn-primary' : 'btn-outline-secondary'"
+              @click="method = 'POST'"
+            >POST</button>
+          </div>
+
+          <!-- Fill Random Button -->
+          <button type="button" class="btn-fill-random" @click="fillRandom()">
+            <i class="bi bi-shuffle"></i>
+            <span>Fill random sample</span>
+          </button>
+        </div>
+
+        <!-- Form Grid -->
+        <div class="row g-3 mb-3">
+          <div class="col-6 col-md-4">
+            <label class="form-label small text-muted fw-semibold mb-1">exam *</label>
+            <select class="form-select form-select-sm" x-model="form.exam">
+              <template x-for="item in $store.apiData.exams" :key="item.value">
+                <option :value="item.value" x-text="item.label"></option>
+              </template>
+            </select>
+          </div>
+
+          <div class="col-6 col-md-4">
+            <label class="form-label small text-muted fw-semibold mb-1">board *</label>
+            <select class="form-select form-select-sm" x-model="form.board">
+              <template x-for="item in $store.apiData.boards" :key="item.value">
+                <option :value="item.value" x-text="item.label"></option>
+              </template>
+            </select>
+          </div>
+
+          <div class="col-6 col-md-4">
+            <label class="form-label small text-muted fw-semibold mb-1">year *</label>
+            <input type="number" class="form-control form-control-sm" placeholder="e.g. 2025" x-model="form.year" />
+          </div>
+
+          <div class="col-6 col-md-4">
+            <label class="form-label small text-muted fw-semibold mb-1">roll *</label>
+            <input type="number" class="form-control form-control-sm" placeholder="e.g. 617381" x-model="form.roll" />
+          </div>
+
+          <div class="col-6 col-md-4">
+            <label class="form-label small text-muted fw-semibold mb-1">reg *</label>
+            <input type="number" class="form-control form-control-sm" placeholder="e.g. 2213489227" x-model="form.reg" />
+          </div>
+
+          <div class="col-6 col-md-4">
+            <label class="form-label small text-muted fw-semibold mb-1">maxCaptchaRetry</label>
+            <input type="number" class="form-control form-control-sm" placeholder="10–500 (optional)" min="10" max="500" x-model="form.maxCaptchaRetry" />
+          </div>
+        </div>
+
+        <!-- Live Command Preview -->
+        <div class="terminal-block mb-3">
+          <div class="terminal-header">
+            <span class="terminal-title">Request Preview</span>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-muted font-monospace" x-text="method"></span>
+              <button type="button" class="copy-btn" onclick="copyCode(this, 'preview-get-result')">
+                <i class="bi bi-clipboard"></i> <span>Copy</span>
+              </button>
+            </div>
+          </div>
+          <pre class="terminal-pre"><code class="language-bash" id="preview-get-result" x-text="previewCommand"></code></pre>
+        </div>
+
+        <!-- Action Button -->
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <button 
+            type="button" 
+            class="btn-action-primary" 
+            :disabled="loading" 
+            @click="execute()"
+          >
+            <span class="spinner-border spinner-border-sm" role="status" x-show="loading"></span>
+            <i class="bi bi-send-fill" x-show="!loading"></i>
+            <span x-text="loading ? 'Fetching result...' : 'Send Request'"></span>
+          </button>
+        </div>
+
+        <!-- Response Viewer -->
+        <div x-show="response !== null || errorMessage !== ''" x-cloak class="mt-4">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="small text-muted fw-semibold text-uppercase tracking-wider">Response:</span>
+            <span 
+              class="response-status-badge" 
+              :class="isSuccess ? 'ok' : 'err'"
+            >
+              <i class="bi" :class="isSuccess ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+              <span x-text="statusCode + ' ' + statusText"></span>
+            </span>
+            <span class="small text-muted font-monospace" x-show="duration !== null" x-text="duration + 'ms'"></span>
+          </div>
+
+          <div class="terminal-block">
+            <div class="terminal-header">
+              <span class="terminal-title">Response</span>
+              <button type="button" class="copy-btn" onclick="copyCode(this, 'response-get-result')">
+                <i class="bi bi-clipboard"></i> <span>Copy</span>
+              </button>
+            </div>
+            <pre class="terminal-pre"><code class="language-json" id="response-get-result" x-text="response || errorMessage"></code></pre>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         API 2: /api/get-institutions
+         ========================================== -->
+    <section class="api-card" id="get-institutions" x-data="getInstitutionsEndpoint">
+      
+      <!-- Card Header -->
+      <div class="api-card-header">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span class="badge-method badge-method-get">GET</span>
+          <span class="endpoint-uri">/api/get-institutions</span>
+        </div>
+        <span class="text-muted small">Lookup schools and colleges under specific boards</span>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <ul class="nav nav-pills nav-pills-custom">
+        <li class="nav-item">
+          <button class="nav-link" :class="{ 'active': activeTab === 'params' }" @click="activeTab = 'params'">
+            <i class="bi bi-list-columns me-1"></i> Parameters
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" :class="{ 'active': activeTab === 'example' }" @click="activeTab = 'example'">
+            <i class="bi bi-code-slash me-1"></i> Example
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" :class="{ 'active': activeTab === 'playground' }" @click="activeTab = 'playground'; highlightPreview()">
+            <i class="bi bi-play-circle-fill me-1"></i> Playground
+          </button>
+        </li>
+      </ul>
+
+      <!-- Tab 1: Parameters -->
+      <div class="p-4" x-show="activeTab === 'params'">
+        <h6 class="text-uppercase text-muted fw-bold small mb-3 tracking-wide">Query Parameters</h6>
+        <div class="table-responsive rounded-2 border mb-4">
+          <table class="table table-custom align-middle">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Requirement</th>
+                <th style="min-width: 20rem;">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="param-name">board</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><span class="badge-tag-req">Required</span></td>
+                <td>Education Board code (e.g. <code>dhaka</code>, <code>jessore</code>, <code>chittagong</code>).</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">exam</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><span class="badge-tag-req">Required</span></td>
+                <td>Examination type: <code>jsc</code>, <code>ssc</code>, <code>hsc</code>, <code>dibs</code>.</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">year</span></td>
+                <td><span class="param-type">number</span></td>
+                <td><span class="badge-tag-opt">Optional</span></td>
+                <td>Passing year. If omitted, server will automatically scan backwards from the current year to find the latest published list.</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">type</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><span class="badge-tag-opt">Optional</span></td>
+                <td>
+                  <div>Output structure shape:</div>
+                  <div class="mt-1">
+                    <span class="val-badge">flat</span> Flat array of institution objects with EIIN, code, name, zilla, thana
+                    <span class="val-badge">nested</span> (Default) Hierarchical tree grouped by <code>zilla &rarr; thana &rarr; [institutions]</code>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-3 rounded-2 border bg-body-tertiary small text-muted">
+          <i class="bi bi-info-circle text-primary me-1"></i>
+          <strong>Output Note:</strong> Flat lists output items with shape <code>{ eiin, code, name, zilla, thana }</code>. Nested output provides fast geographical grouping without extra client-side manipulation.
+        </div>
+      </div>
+
+      <!-- Tab 2: Example -->
+      <div class="p-4" x-show="activeTab === 'example'">
+        
+        <!-- cURL Nested (Default) -->
+        <div class="terminal-block">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+            </div>
+            <span class="terminal-title">cURL (Nested Output - Default)</span>
+            <button type="button" class="copy-btn" onclick="copyCode(this, 'example-gi-nested')">
+              <i class="bi bi-clipboard"></i> <span>Copy</span>
+            </button>
+          </div>
+          <pre class="terminal-pre"><code class="language-bash" id="example-gi-nested">curl "http://localhost:3000/api/get-institutions?board=jessore&amp;exam=ssc&amp;year=2025"</code></pre>
+        </div>
+
+        <!-- cURL Flat -->
+        <div class="terminal-block">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+            </div>
+            <span class="terminal-title">cURL (Flat Output)</span>
+            <button type="button" class="copy-btn" onclick="copyCode(this, 'example-gi-flat')">
+              <i class="bi bi-clipboard"></i> <span>Copy</span>
+            </button>
+          </div>
+          <pre class="terminal-pre"><code class="language-bash" id="example-gi-flat">curl "http://localhost:3000/api/get-institutions?board=jessore&amp;exam=ssc&amp;year=2025&amp;type=flat"</code></pre>
+        </div>
+
+        <div class="terminal-block">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+            </div>
+            <span class="terminal-title">Response (Flat)</span>
+            <button type="button" class="copy-btn" onclick="copyCode(this, 'example-gi-res')">
+              <i class="bi bi-clipboard"></i> <span>Copy</span>
+            </button>
+          </div>
+          <pre class="terminal-pre"><code class="language-json" id="example-gi-res">{
+  "success": true,
+  "data": [
+    {
+      "eiin": "116970",
+      "code": "",
+      "name": "Baruna Bazar P. D. C. Collegiate School",
+      "zilla": "KHULNA",
+      "thana": "DUMURIA"
+    },
+    {
+      "eiin": "114838",
+      "code": "",
+      "name": "Barabaria Secondary School",
+      "zilla": "BAGERHAT",
+      "thana": "CHITALMARI"
+    },
+    {
+      "eiin": "117507",
+      "code": "",
+      "name": "Jotashahi Secondary School",
+      "zilla": "KUSHTIA",
+      "thana": "DAULATPUR"
+    }
+  ]
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Tab 3: Playground -->
+      <div class="playground-panel" x-show="activeTab === 'playground'">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+          <span class="badge-method badge-method-get">GET</span>
+
+          <!-- Fill Random Button -->
+          <button type="button" class="btn-fill-random" @click="fillRandom()">
+            <i class="bi bi-shuffle"></i>
+            <span>Fill random sample</span>
+          </button>
+        </div>
+
+        <!-- Form Grid -->
+        <div class="row g-3 mb-3">
+          <div class="col-6 col-md-3">
+            <label class="form-label small text-muted fw-semibold mb-1">board *</label>
+            <select class="form-select form-select-sm" x-model="form.board">
+              <template x-for="item in $store.apiData.boards" :key="item.value">
+                <option :value="item.value" x-text="item.label"></option>
+              </template>
+            </select>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <label class="form-label small text-muted fw-semibold mb-1">exam *</label>
+            <select class="form-select form-select-sm" x-model="form.exam">
+              <template x-for="item in $store.apiData.exams" :key="item.value">
+                <option :value="item.value" x-text="item.label"></option>
+              </template>
+            </select>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <label class="form-label small text-muted fw-semibold mb-1">year</label>
+            <input type="number" class="form-control form-control-sm" placeholder="auto-detect" x-model="form.year" />
+          </div>
+
+          <div class="col-6 col-md-3">
+            <label class="form-label small text-muted fw-semibold mb-1">type</label>
+            <select class="form-select form-select-sm" x-model="form.type">
+              <option value="flat">flat (array)</option>
+              <option value="nested">nested (zilla &rarr; thana)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Live Command Preview -->
+        <div class="terminal-block mb-3">
+          <div class="terminal-header">
+            <span class="terminal-title">Request Preview</span>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-muted font-monospace">GET</span>
+              <button type="button" class="copy-btn" onclick="copyCode(this, 'preview-get-institutions')">
+                <i class="bi bi-clipboard"></i> <span>Copy</span>
+              </button>
+            </div>
+          </div>
+          <pre class="terminal-pre"><code class="language-bash" id="preview-get-institutions" x-text="previewCommand"></code></pre>
+        </div>
+
+        <!-- Action Button -->
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <button 
+            type="button" 
+            class="btn-action-primary" 
+            :disabled="loading" 
+            @click="execute()"
+          >
+            <span class="spinner-border spinner-border-sm" role="status" x-show="loading"></span>
+            <i class="bi bi-send-fill" x-show="!loading"></i>
+            <span x-text="loading ? 'Loading institutions...' : 'Send Request'"></span>
+          </button>
+        </div>
+
+        <!-- Response Viewer -->
+        <div x-show="response !== null || errorMessage !== ''" x-cloak class="mt-4">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="small text-muted fw-semibold text-uppercase tracking-wider">Response:</span>
+            <span 
+              class="response-status-badge" 
+              :class="isSuccess ? 'ok' : 'err'"
+            >
+              <i class="bi" :class="isSuccess ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+              <span x-text="statusCode + ' ' + statusText"></span>
+            </span>
+            <span class="small text-muted font-monospace" x-show="duration !== null" x-text="duration + 'ms'"></span>
+          </div>
+
+          <div class="terminal-block">
+            <div class="terminal-header">
+              <span class="terminal-title">Response</span>
+              <button type="button" class="copy-btn" onclick="copyCode(this, 'response-get-institutions')">
+                <i class="bi bi-clipboard"></i> <span>Copy</span>
+              </button>
+            </div>
+            <pre class="terminal-pre"><code class="language-json" id="response-get-institutions" x-text="response || errorMessage"></code></pre>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-top py-4 text-center text-muted small bg-body-tertiary">
+    <div class="container-lg">
+      <span>BoardAPI Showcase &bull; Powered by <a href="https://hono.dev" target="_blank" rel="noreferrer" class="text-decoration-none text-muted fw-semibold">Hono</a></span>
+    </div>
+  </footer>
+
+  <!-- Prism Syntax Highlighter -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+
+  <!-- Application JS Module -->
+  <script type="module" src="js/app.js"></script>
+
+  <!-- Alpine.js Core -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+</body>
+</html>
