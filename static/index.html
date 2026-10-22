@@ -78,6 +78,21 @@
         <span class="text-muted">Base URL:</span>
         <code class="text-primary fw-semibold" x-text="$store.apiData.origin">http://localhost:3000</code>
       </div>
+
+      <!-- How It Operates Note -->
+      <div class="card bg-body-tertiary border mt-4 text-start mx-auto" style="max-width: 780px;">
+        <div class="card-body p-3 p-md-4">
+          <div class="d-flex align-items-start gap-3">
+            <i class="bi bi-info-circle-fill text-primary fs-5 mt-1"></i>
+            <div>
+              <h6 class="fw-semibold mb-1">How This API Operates</h6>
+              <p class="text-muted small mb-0">
+                This service does not bypass security mechanisms. Instead, it queries the official upstream result portal (<a href="https://eboardresults.com" target="_blank" rel="noreferrer" class="text-decoration-none">eboardresults.com</a>) using an offline pre-solved dictionary of captcha challenges covering <strong>83.27%</strong> of all possible variants. Valid requests are automatically resolved, structured, and returned as clean JSON.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </header>
 
     <!-- ==========================================
@@ -709,13 +724,6 @@
     </section>
 
   </main>
-
-  <!-- Footer -->
-  <footer class="border-top py-4 text-center text-muted small bg-body-tertiary">
-    <div class="container-lg">
-      <span>BoardAPI Showcase &bull; Powered by <a href="https://hono.dev" target="_blank" rel="noreferrer" class="text-decoration-none text-muted fw-semibold">Hono</a></span>
-    </div>
-  </footer>
 
   <!-- Prism Syntax Highlighter -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
