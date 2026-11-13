@@ -92,6 +92,36 @@ export const SAMPLE_RESULTS = [
     year: 2025,
     roll: 617381,
     reg: 2213489227
+  },
+
+  // HSC Samples
+  {
+    exam: 'hsc',
+    board: 'jessore',
+    year: 2026,
+    roll: 511512,
+    reg: 2113205763
+  },
+  {
+    exam: 'hsc',
+    board: 'jessore',
+    year: 2026,
+    roll: 806812,
+    reg: 2110931033
+  },
+  {
+    exam: 'hsc',
+    board: 'jessore',
+    year: 2026,
+    roll: 806838,
+    reg: 2113204274
+  },
+  {
+    exam: 'hsc',
+    board: 'jessore',
+    year: 2026,
+    roll: 641600,
+    reg: 2113147918
   }
 ];
 

@@ -1,6 +1,6 @@
 {
   "name": "BoardAPI",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "Just a bypass api of so called secured eboardresults.com",
   "main": "index.js",
